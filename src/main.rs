@@ -184,9 +184,12 @@ async fn excel_handler() -> impl IntoResponse {
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let _ = dotenv::dotenv();
+    let port = std::env::var("PORT").expect("PORT must be set");
+
     let app = Router::new().route("/", get(excel_handler));
 
-    let addr = SocketAddr::from(([0, 0, 0, 0], 3000));
+    let addr = SocketAddr::from(([0, 0, 0, 0], port.parse::<u16>().unwrap()));
     let listener = TcpListener::bind(addr).await?;
 
     axum::serve(listener, app).await.unwrap();
